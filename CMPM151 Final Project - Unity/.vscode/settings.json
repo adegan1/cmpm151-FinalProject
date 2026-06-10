@@ -67,5 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "cmpm151-FinalProject.slnx"
+    "dotnet.defaultSolution": "CMPM151 Final Project - Unity.slnx"
 }

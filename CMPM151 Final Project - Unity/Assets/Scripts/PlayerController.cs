@@ -21,12 +21,38 @@ namespace Platformer
         private Rigidbody2D rb;
         private Animator animator;
         private GameManager gameManager;
+        private bool oscInitialized;
 
         void Start()
         {
             rb = GetComponent<Rigidbody2D>();
             animator = GetComponent<Animator>();
             gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+            InitializeOsc();
+        }
+
+        private void InitializeOsc()
+        {
+            try
+            {
+                OSCHandler.Instance.Init();
+                oscInitialized = true;
+            }
+            catch (System.Exception ex)
+            {
+                oscInitialized = false;
+                Debug.LogError("OSC init failed: " + ex.Message);
+            }
+        }
+
+        private void SendCoinPickupOscTrigger()
+        {
+            if (!oscInitialized)
+            {
+                return;
+            }
+
+            OSCHandler.Instance.SendMessageToClient("pd", "/unity/trigger", 1);
         }
 
         private void FixedUpdate()
@@ -133,6 +159,7 @@ namespace Platformer
             if (other.gameObject.tag == "Coin")
             {
                 gameManager.coinsCounter += 1;
+                SendCoinPickupOscTrigger();
                 Destroy(other.gameObject);
             }
         }

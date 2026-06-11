@@ -88,12 +88,25 @@ public class OSCHandler : MonoBehaviour
 	{
         //Initialize OSC clients (transmitters)
         //Example:		
-        CreateClient("pd", IPAddress.Parse("127.0.0.1"), 8000);
+		if (!_clients.ContainsKey("pd"))
+		{
+			CreateClient("pd", IPAddress.Parse("127.0.0.1"), 8000);
+		}
 
 
         //Initialize OSC servers (listeners)
         //Example:
-        CreateServer("unity", 8001);
+		if (!_servers.ContainsKey("unity"))
+		{
+			try
+			{
+				CreateServer("unity", 8001);
+			}
+			catch (Exception ex)
+			{
+				Debug.LogWarning("OSC server init skipped: " + ex.Message);
+			}
+		}
     }
 
     #region Properties
@@ -180,6 +193,11 @@ public class OSCHandler : MonoBehaviour
 	/// </param>
 	public OSCServer CreateServer(string serverId, int port)
 	{
+	if (_servers.ContainsKey(serverId))
+	{
+	    return _servers[serverId].server;
+	}
+
         OSCServer server = new OSCServer(port);
         server.PacketReceivedEvent += OnPacketReceived;
 

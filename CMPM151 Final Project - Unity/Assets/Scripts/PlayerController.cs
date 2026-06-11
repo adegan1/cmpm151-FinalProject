@@ -22,6 +22,10 @@ namespace Platformer
         private Animator animator;
         private GameManager gameManager;
         private bool oscInitialized;
+        [SerializeField] private float footstepInterval = 0.35f;
+        private float nextFootstepTime;
+        private bool deathTriggerSent;
+        private int lastSentCoinCount = int.MinValue;
 
         void Start()
         {
@@ -29,6 +33,7 @@ namespace Platformer
             animator = GetComponent<Animator>();
             gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
             InitializeOsc();
+            SyncCoinCountOsc();
         }
 
         private void InitializeOsc()
@@ -52,7 +57,70 @@ namespace Platformer
                 return;
             }
 
-            OSCHandler.Instance.SendMessageToClient("pd", "/unity/trigger", 1);
+            OSCHandler.Instance.SendMessageToClient("pd", "/unity/cointrig", 1);
+        }
+
+        private void SendOscTrigger(string triggerName)
+        {
+            if (!oscInitialized)
+            {
+                return;
+            }
+
+            OSCHandler.Instance.SendMessageToClient("pd", "/unity/" + triggerName, 1);
+        }
+
+        private void SendOscInt(string eventName, int value)
+        {
+            if (!oscInitialized)
+            {
+                return;
+            }
+
+            OSCHandler.Instance.SendMessageToClient("pd", "/unity/" + eventName, value);
+        }
+
+        private void SendOscFloat(string eventName, float value)
+        {
+            if (!oscInitialized)
+            {
+                return;
+            }
+
+            OSCHandler.Instance.SendMessageToClient("pd", "/unity/" + eventName, value);
+        }
+
+        private void SyncCoinCountOsc()
+        {
+            if (gameManager == null)
+            {
+                return;
+            }
+
+            int currentCoinCount = gameManager.coinsCounter;
+            if (currentCoinCount == lastSentCoinCount)
+            {
+                return;
+            }
+
+            SendOscInt("coincount", currentCoinCount);
+            SendOscFloat("coincount", currentCoinCount);
+            lastSentCoinCount = currentCoinCount;
+        }
+
+        private void HandleFootstepTriggers()
+        {
+            bool isMovingHorizontally = Mathf.Abs(moveInput) > 0.1f;
+            if (!isGrounded || !isMovingHorizontally || deathState)
+            {
+                return;
+            }
+
+            if (Time.time >= nextFootstepTime)
+            {
+                SendOscTrigger("steptrig");
+                nextFootstepTime = Time.time + Mathf.Max(0.05f, footstepInterval);
+            }
         }
 
         private void FixedUpdate()
@@ -63,6 +131,7 @@ namespace Platformer
         void Update()
         {
             moveInput = ReadHorizontalInput();
+            SyncCoinCountOsc();
 
             if (Mathf.Abs(moveInput) > 0.01f)
             {
@@ -77,6 +146,7 @@ namespace Platformer
 
             if (IsJumpPressedThisFrame() && isGrounded)
             {
+                SendOscTrigger("jumptrig");
                 rb.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
             }
 
@@ -90,6 +160,8 @@ namespace Platformer
             {
                 Flip();
             }
+
+            HandleFootstepTriggers();
         }
 
         private float ReadHorizontalInput()
@@ -147,6 +219,12 @@ namespace Platformer
             if (other.gameObject.tag == "Enemy")
             {
                 deathState = true; // Say to GameManager that player is dead
+                if (!deathTriggerSent)
+                {
+                    SyncCoinCountOsc();
+                    SendOscTrigger("deathtrig");
+                    deathTriggerSent = true;
+                }
             }
             else
             {
@@ -159,6 +237,7 @@ namespace Platformer
             if (other.gameObject.tag == "Coin")
             {
                 gameManager.coinsCounter += 1;
+                SyncCoinCountOsc();
                 SendCoinPickupOscTrigger();
                 Destroy(other.gameObject);
             }

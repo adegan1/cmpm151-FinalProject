@@ -33,7 +33,6 @@ namespace Platformer
             animator = GetComponent<Animator>();
             gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
             InitializeOsc();
-            OSCHandler.Instance.SendMessageToClient("pd", "/oscmusicon", 1);
             SyncCoinCountOsc();
         }
 

@@ -20,10 +20,51 @@ namespace Platformer
         private bool deathSequenceRunning;
         private bool coinCountLerping;
         private Coroutine deathSequenceRoutine;
+        private bool oscInitialized;
+        private Coroutine musicStartRoutine;
 
         void Start()
         {
             player = GameObject.Find("Player").GetComponent<PlayerController>();
+            InitializeOsc();
+            SendMusicTrigger(true);
+
+            if (musicStartRoutine != null)
+            {
+                StopCoroutine(musicStartRoutine);
+            }
+
+            musicStartRoutine = StartCoroutine(ResendMusicTriggerAfterSceneStart());
+        }
+
+        private IEnumerator ResendMusicTriggerAfterSceneStart()
+        {
+            yield return null;
+            SendMusicTrigger(true);
+        }
+
+        private void InitializeOsc()
+        {
+            try
+            {
+                OSCHandler.Instance.Init();
+                oscInitialized = true;
+            }
+            catch (System.Exception ex)
+            {
+                oscInitialized = false;
+                Debug.LogError("OSC init failed: " + ex.Message);
+            }
+        }
+
+        private void SendMusicTrigger(bool musicOn)
+        {
+            if (!oscInitialized)
+            {
+                return;
+            }
+
+            OSCHandler.Instance.SendMessageToClient("pd", musicOn ? "/unity/oscmusicon" : "/unity/oscmusicoff", 1);
         }
 
         void Update()
@@ -47,6 +88,7 @@ namespace Platformer
             }
 
             deathSequenceRunning = true;
+            SendMusicTrigger(false);
             playerGameObject.SetActive(false);
             GameObject deathPlayer = (GameObject)Instantiate(deathPlayerPrefab, playerGameObject.transform.position, playerGameObject.transform.rotation);
             deathPlayer.transform.localScale = new Vector3(playerGameObject.transform.localScale.x, playerGameObject.transform.localScale.y, playerGameObject.transform.localScale.z);

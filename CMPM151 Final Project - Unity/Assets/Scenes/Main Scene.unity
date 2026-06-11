@@ -550,6 +550,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 7873588928898685939, guid: 23035e71af28fbb46a389ba66a0a5430, type: 3}
+      propertyPath: wall.m_Bits
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7873588928898685939, guid: 23035e71af28fbb46a389ba66a0a5430, type: 3}
+      propertyPath: ground.m_Bits
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7873588928898685944, guid: 23035e71af28fbb46a389ba66a0a5430, type: 3}
       propertyPath: m_RootOrder
       value: 13
@@ -20987,9 +20995,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1163444921}
     - target: {fileID: 8125563719255511135, guid: 6cdb5ef6764ef30448310aba99d170e7, type: 3}
+      propertyPath: coinCountDelayMs
+      value: 700
+      objectReference: {fileID: 0}
+    - target: {fileID: 8125563719255511135, guid: 6cdb5ef6764ef30448310aba99d170e7, type: 3}
       propertyPath: playerGameObject
       value: 
       objectReference: {fileID: 1916759675}
+    - target: {fileID: 8125563719255511135, guid: 6cdb5ef6764ef30448310aba99d170e7, type: 3}
+      propertyPath: coinCountLerpDelayMs
+      value: 700
+      objectReference: {fileID: 0}
+    - target: {fileID: 8125563719255511135, guid: 6cdb5ef6764ef30448310aba99d170e7, type: 3}
+      propertyPath: coinCountStepIntervalMs
+      value: 70
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

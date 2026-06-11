@@ -20126,6 +20126,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d44858fe4c857543aa14547d47cac44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DayNightHandler
+  cycleTime: 30
+  timeSoFar: 0
+  mainCamera: {fileID: 519420031}
 --- !u!4 &1732325203
 Transform:
   m_ObjectHideFlags: 0

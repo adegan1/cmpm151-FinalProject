@@ -14,14 +14,20 @@ namespace Platformer
         private PlayerController player;
         public GameObject deathPlayerPrefab;
         public Text coinText;
+        [SerializeField] private Transform waterfallTransform;
+        [SerializeField] private float maxWaterfallDistance = 20f;
         [SerializeField] private int coinCountDelayMs = 500;
         [SerializeField] private int coinCountStepIntervalMs = 100;
+        [SerializeField] private float birdChirpMinInterval = 4f;
+        [SerializeField] private float birdChirpMaxInterval = 10f;
 
         private bool deathSequenceRunning;
         private bool coinCountLerping;
         private Coroutine deathSequenceRoutine;
         private bool oscInitialized;
         private Coroutine musicStartRoutine;
+        private Coroutine birdChirpRoutine;
+        private float lastSentWaterfallDistance = float.NaN;
 
         void Start()
         {
@@ -35,12 +41,36 @@ namespace Platformer
             }
 
             musicStartRoutine = StartCoroutine(ResendMusicTriggerAfterSceneStart());
+            if (birdChirpRoutine != null)
+            {
+                StopCoroutine(birdChirpRoutine);
+            }
+
+            birdChirpRoutine = StartCoroutine(BirdChirpRoutine());
+            SyncWaterfallDistanceOsc();
         }
 
         private IEnumerator ResendMusicTriggerAfterSceneStart()
         {
             yield return null;
             SendMusicTrigger(true);
+        }
+
+        private IEnumerator BirdChirpRoutine()
+        {
+            while (!deathSequenceRunning)
+            {
+                float minInterval = Mathf.Max(0.1f, birdChirpMinInterval);
+                float maxInterval = Mathf.Max(minInterval, birdChirpMaxInterval);
+                float waitTime = Random.Range(minInterval, maxInterval);
+
+                yield return new WaitForSeconds(waitTime);
+
+                if (!deathSequenceRunning)
+                {
+                    OSCHandler.Instance.SendMessageToClient("pd", "/unity/birdtrig", 1);
+                }
+            }
         }
 
         private void InitializeOsc()
@@ -74,10 +104,36 @@ namespace Platformer
                 coinText.text = coinsCounter.ToString();
             }
 
+            SyncWaterfallDistanceOsc();
+
             if(player.deathState == true)
             {
                 StartDeathSequence();
             }
+        }
+
+        private void SyncWaterfallDistanceOsc()
+        {
+            if (!oscInitialized || deathSequenceRunning || waterfallTransform == null || playerGameObject == null)
+            {
+                return;
+            }
+
+            float normalizedDistance = GetNormalizedWaterfallDistance();
+            if (!float.IsNaN(lastSentWaterfallDistance) && Mathf.Abs(normalizedDistance - lastSentWaterfallDistance) < 0.01f)
+            {
+                return;
+            }
+
+            OSCHandler.Instance.SendMessageToClient("pd", "/unity/waterfalldistance", normalizedDistance);
+            lastSentWaterfallDistance = normalizedDistance;
+        }
+
+        private float GetNormalizedWaterfallDistance()
+        {
+            float maxDistance = Mathf.Max(0.001f, maxWaterfallDistance);
+            float distance = Vector3.Distance(playerGameObject.transform.position, waterfallTransform.position);
+            return 1f - Mathf.Clamp01(distance / maxDistance);
         }
 
         private void StartDeathSequence()
@@ -89,6 +145,11 @@ namespace Platformer
 
             deathSequenceRunning = true;
             SendMusicTrigger(false);
+            if (birdChirpRoutine != null)
+            {
+                StopCoroutine(birdChirpRoutine);
+                birdChirpRoutine = null;
+            }
             playerGameObject.SetActive(false);
             GameObject deathPlayer = (GameObject)Instantiate(deathPlayerPrefab, playerGameObject.transform.position, playerGameObject.transform.rotation);
             deathPlayer.transform.localScale = new Vector3(playerGameObject.transform.localScale.x, playerGameObject.transform.localScale.y, playerGameObject.transform.localScale.z);

@@ -138,11 +138,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7873588928898685939, guid: 23035e71af28fbb46a389ba66a0a5430, type: 3}
       propertyPath: wall.m_Bits
-      value: 0
+      value: 64
       objectReference: {fileID: 0}
     - target: {fileID: 7873588928898685939, guid: 23035e71af28fbb46a389ba66a0a5430, type: 3}
       propertyPath: ground.m_Bits
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7873588928898685944, guid: 23035e71af28fbb46a389ba66a0a5430, type: 3}
       propertyPath: m_RootOrder
@@ -556,7 +556,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7873588928898685939, guid: 23035e71af28fbb46a389ba66a0a5430, type: 3}
       propertyPath: ground.m_Bits
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7873588928898685944, guid: 23035e71af28fbb46a389ba66a0a5430, type: 3}
       propertyPath: m_RootOrder
@@ -20932,6 +20932,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy
       objectReference: {fileID: 0}
+    - target: {fileID: 7873588928898685939, guid: 23035e71af28fbb46a389ba66a0a5430, type: 3}
+      propertyPath: wall.m_Bits
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7873588928898685939, guid: 23035e71af28fbb46a389ba66a0a5430, type: 3}
+      propertyPath: ground.m_Bits
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7873588928898685944, guid: 23035e71af28fbb46a389ba66a0a5430, type: 3}
       propertyPath: m_RootOrder
       value: 8
@@ -20976,7 +20984,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7873588928898685939, guid: 23035e71af28fbb46a389ba66a0a5430, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -21049,6 +21058,14 @@ PrefabInstance:
       propertyPath: playerGameObject
       value: 
       objectReference: {fileID: 1916759675}
+    - target: {fileID: 8125563719255511135, guid: 6cdb5ef6764ef30448310aba99d170e7, type: 3}
+      propertyPath: birdChirpMaxInterval
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8125563719255511135, guid: 6cdb5ef6764ef30448310aba99d170e7, type: 3}
+      propertyPath: birdChirpMinInterval
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 8125563719255511135, guid: 6cdb5ef6764ef30448310aba99d170e7, type: 3}
       propertyPath: coinCountLerpDelayMs
       value: 700

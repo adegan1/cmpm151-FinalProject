@@ -184,10 +184,10 @@ MonoBehaviour:
   moveSpeed: 2
   ground:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
   wall:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   triggerCollider: {fileID: 7873588928898685948}
 --- !u!95 &1449881804780183223
 Animator:

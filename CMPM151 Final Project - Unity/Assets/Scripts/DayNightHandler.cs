@@ -5,6 +5,7 @@ public class DayNightHandler : MonoBehaviour
     public float cycleTime = 30;
     public float timeSoFar = 0;
     public Camera mainCamera;
+    private bool isDay = true;
     /*
     void Start()
     {
@@ -26,7 +27,13 @@ public class DayNightHandler : MonoBehaviour
 
     void onCycleChange()
     {
-        OSCHandler.Instance.SendMessageToClient("pd", "/cycleChange", 1);
+        isDay = !isDay;
+        OSCHandler.Instance.SendMessageToClient("pd", "/unity/cyclechange", 1);
         mainCamera.backgroundColor = mainCamera.backgroundColor == Color.darkGray ? Color.lightBlue : Color.darkGray;
+    }
+
+    public bool IsDay()
+    {
+        return isDay;
     }
 }

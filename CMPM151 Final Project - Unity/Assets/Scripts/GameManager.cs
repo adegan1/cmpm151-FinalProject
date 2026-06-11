@@ -28,10 +28,12 @@ namespace Platformer
         private Coroutine musicStartRoutine;
         private Coroutine birdChirpRoutine;
         private float lastSentWaterfallDistance = float.NaN;
+        private DayNightHandler dayNightHandler;
 
         void Start()
         {
             player = GameObject.Find("Player").GetComponent<PlayerController>();
+            dayNightHandler = GameObject.Find("DayNightHandler").GetComponent<DayNightHandler>();
             InitializeOsc();
             SendMusicTrigger(true);
 
@@ -66,7 +68,7 @@ namespace Platformer
 
                 yield return new WaitForSeconds(waitTime);
 
-                if (!deathSequenceRunning)
+                if (!deathSequenceRunning && dayNightHandler != null && dayNightHandler.IsDay())
                 {
                     OSCHandler.Instance.SendMessageToClient("pd", "/unity/birdtrig", 1);
                 }
